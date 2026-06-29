@@ -1,5 +1,6 @@
 import logging
 
+
 def request_hook(logger: logging.Logger):
     """Closure function for logging HTTPX requests.
 
@@ -14,6 +15,7 @@ def request_hook(logger: logging.Logger):
         if request.content:
             logger.debug(f"Request Hook: RB : {request.content}")
     return logs_requests
+
 
 def response_hook(logger: logging.Logger):
     """Closure function for logging HTTPX responses.
@@ -38,6 +40,4 @@ def response_hook(logger: logging.Logger):
         else:
             logger.debug(f"Response Hook : RC: {response.status_code} | REL {response.elapsed.total_seconds()}")
 
-
     return logs_responses
-

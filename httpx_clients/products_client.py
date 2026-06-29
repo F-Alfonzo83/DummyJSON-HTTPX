@@ -4,6 +4,7 @@ from configurations.config_loader import ConfigLoader
 
 config = ConfigLoader()
 
+
 class ProductsClient:
     def __init__(self, client: httpx.Client, logger: logging.Logger):
         self.client = client
@@ -13,6 +14,6 @@ class ProductsClient:
         response = self.client.get(f"/{config.products_url().lstrip('/')}")
         return response
 
-    def get_product_by_id(self, product_id:str) -> httpx.Response:
+    def get_product_by_id(self, product_id: str) -> httpx.Response:
         response = self.client.get(f"/{config.products_url().lstrip('/')}/{product_id}")
         return response

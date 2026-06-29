@@ -8,8 +8,10 @@ from utilities.logger import _logger
 
 config = config_loader.ConfigLoader()
 
+
 class DummyJsonBase:
     """Defines a Base for the requests that will be sent to DummyJson."""
+
     def __init__(self):
         """Creates a base  HTTPX Client object used to build requests.
 
@@ -35,16 +37,16 @@ class DummyJsonBase:
 
         self.dummyjson_client = httpx.Client(base_url=self.BASE_URL,
                                              headers={'Content-Type': 'application/json'},
-                                             event_hooks={"request" : [self.request_hook_logger],# Must be a list
-                                                          "response" : [self.response_hook_logger]})# Must be a list
+                                             event_hooks={"request": [self.request_hook_logger],  # Must be a list
+                                                          "response": [self.response_hook_logger]})  # Must be a list
 
-        #Clients
-        ## Authentication Client
+        # Clients
+        # Authentication Client
         self.auth_client = AuthClient(client=self.dummyjson_client, logger=self.logger)
-        ## Products Client
+        # Products Client
         self.products_client = ProductsClient(client=self.dummyjson_client, logger=self.logger)
 
-    def retrieve_auth_token (self, username:str, password:str, expires_in:int):
+    def retrieve_auth_token(self, username: str, password: str, expires_in: int):
         """Retrieves the authorization token for the given username and password.
 
         Args:

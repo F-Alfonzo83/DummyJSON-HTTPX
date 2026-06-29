@@ -6,9 +6,11 @@ from utilities.logger import _logger
 # Instantiate a Logger for the Assertions Helper Module
 logger = _logger(__name__)
 
-def assert_status_code(response: httpx.Response, expected_status_code: int =200):
+
+def assert_status_code(response: httpx.Response, expected_status_code: int = 200):
     logger.info(f"TEST: Asserting status code")
     assert response.status_code == expected_status_code
+
 
 def assert_json_response(response: httpx.Response):
     logger.info("TEST: Asserting Response is of type: JSON")
@@ -19,20 +21,23 @@ def assert_json_response(response: httpx.Response):
         pytest.fail()
     return json_response
 
+
 def assert_login_response_body_structure(json_response: dict, expected_body_keys: list[str]):
     logger.info(f"TEST: Asserting Authentication response body structure")
     for value in expected_body_keys:
         assert value in json_response
         assert json_response[value] is not None
 
-def assert_product_response_body_structure(json_response:dict, expected_product_keys:list[str], expected_outer_keys:list[str] = None):
+
+def assert_product_response_body_structure(
+        json_response: dict, expected_product_keys: list[str], expected_outer_keys: list[str] = None):
     logger.info("TEST: Asserting Product Response Body")
     # All of this will be executed only if  There is an outer layer.
     if expected_outer_keys:
         logger.debug("TEST: Asserting Product Response body outer structure")
         for value in expected_outer_keys:
             assert value in json_response
-        #Assert Total, Skip and Limit
+        # Assert Total, Skip and Limit
         logger.debug("TEST: Asserting Total is Integer")
         assert isinstance(json_response["total"], int)
         logger.debug("TEST: Asserting Total is major than Zero")
@@ -66,7 +71,7 @@ def assert_product_response_body_structure(json_response:dict, expected_product_
 
     else:
 
-        ## In case there is no Outer Layer. Single Product
+        # In case there is no Outer Layer. Single Product
         logger.debug("TEST: Asserting Product list inner structure")
         for value in expected_product_keys:
             assert value in json_response

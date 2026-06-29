@@ -8,7 +8,7 @@ class ConfigLoader:
     URL_FILE_LOCATOR = Path(__file__).parent / "url_paths.yaml"
 
     try:
-        with open (URL_FILE_LOCATOR, "r", encoding="utf-8") as yaml_file:
+        with open(URL_FILE_LOCATOR, "r", encoding="utf-8") as yaml_file:
             url_path = yaml.safe_load(yaml_file)
     except FileNotFoundError as fnf_error:
         print(f"File {URL_FILE_LOCATOR} not found.\nSystem Error: {fnf_error}")
@@ -27,7 +27,7 @@ class ConfigLoader:
         return self.url_path["dummy_json"]["testing_env"]["products"]["base_products"]
 
 
-## Testing Section
+# Testing Section
 
 if __name__ == "__main__":
     loader = ConfigLoader()
