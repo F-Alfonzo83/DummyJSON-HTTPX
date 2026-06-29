@@ -1,0 +1,79 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="allure-pytest" />
+          <option value="allure-python-commons" />
+          <option value="anyio" />
+          <option value="attrs" />
+          <option value="behave" />
+          <option value="certifi" />
+          <option value="cffi" />
+          <option value="charset-normalizer" />
+          <option value="colorama" />
+          <option value="cucumber-expressions" />
+          <option value="cucumber-tag-expressions" />
+          <option value="distlib" />
+          <option value="et_xmlfile" />
+          <option value="execnet" />
+          <option value="Faker" />
+          <option value="filelock" />
+          <option value="gherkin-official" />
+          <option value="greenlet" />
+          <option value="h11" />
+          <option value="httpcore" />
+          <option value="httpx" />
+          <option value="idna" />
+          <option value="iniconfig" />
+          <option value="Jinja2" />
+          <option value="jsonpath" />
+          <option value="Mako" />
+          <option value="MarkupSafe" />
+          <option value="mysql-connector-python" />
+          <option value="openpyxl" />
+          <option value="outcome" />
+          <option value="packaging" />
+          <option value="parse" />
+          <option value="parse_type" />
+          <option value="platformdirs" />
+          <option value="playwright" />
+          <option value="pluggy" />
+          <option value="pyaml" />
+          <option value="pycparser" />
+          <option value="pyee" />
+          <option value="Pygments" />
+          <option value="PySocks" />
+          <option value="pytest" />
+          <option value="pytest-base-url" />
+          <option value="pytest-bdd" />
+          <option value="pytest-html" />
+          <option value="pytest-metadata" />
+          <option value="pytest-ordering" />
+          <option value="pytest-playwright" />
+          <option value="pytest-xdist" />
+          <option value="python-discovery" />
+          <option value="python-dotenv" />
+          <option value="python-slugify" />
+          <option value="python_BDD" />
+          <option value="PyYAML" />
+          <option value="requests" />
+          <option value="selenium" />
+          <option value="six" />
+          <option value="sniffio" />
+          <option value="sortedcontainers" />
+          <option value="text-unidecode" />
+          <option value="trio" />
+          <option value="trio-websocket" />
+          <option value="typing_extensions" />
+          <option value="tzdata" />
+          <option value="urllib3" />
+          <option value="virtualenv" />
+          <option value="webdriver-manager" />
+          <option value="websocket-client" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
