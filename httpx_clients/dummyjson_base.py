@@ -41,7 +41,8 @@ class DummyJsonBase:
                                                           "response": [self.response_hook_logger]})  # Must be a list
 
         # Clients
-        # Authentication Client
+        # Authentication Clients:
+        # General:
         self.auth_client = AuthClient(client=self.dummyjson_client, logger=self.logger)
         # Products Client
         self.products_client = ProductsClient(client=self.dummyjson_client, logger=self.logger)

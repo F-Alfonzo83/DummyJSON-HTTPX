@@ -45,33 +45,38 @@ def assert_product_response_body_structure(
         logger.debug("TEST: Asserting Limit matches number of fetched products")
         assert json_response["limit"] == len(json_response["products"])
         logger.debug("TEST: Asserting Product list inner structure")
+        # Evaluating length of the response.
+        if len(json_response["products"]) >= 2:
+            indexes = [
+                json_response["products"][0],
+                json_response["products"][len(json_response["products"]) // 2],
+                json_response["products"][-1]
+            ]
+        else:
+            indexes = [
+                json_response["products"][0],
+            ]
 
-        first_index = json_response["products"][0]
-        last_index = json_response["products"][-1]
-        middle_index = json_response["products"][len(json_response["products"]) // 2]
-
-        logger.debug("TEST: Asserting expected keys inside Products list.")
+        logger.debug("TEST: Asserting the Expected values in the indexes.")
         for value in expected_product_keys:
-            assert value in first_index
-            assert value in middle_index
-            assert value in last_index
+            for index in indexes:
+                assert value in index
 
         logger.debug("TEST: Asserting Product ID is a number and over 0")
-        assert first_index["id"] > 0
-        assert middle_index["id"] > 0
-        assert last_index["id"] > 0
+        for index in indexes:
+            assert index["id"] > 0
+
         logger.debug("TEST: Asserting Price is a float and over 0")
-        assert isinstance(first_index["price"], float)
-        assert isinstance(middle_index["price"], float)
-        assert isinstance(last_index["price"], float)
-        logger.debug("TEST: Asserting Stock is an Integer")
-        assert isinstance(first_index["stock"], int)
-        assert isinstance(middle_index["stock"], int)
-        assert isinstance(last_index["stock"], int)
+        for index in indexes:
+            assert isinstance(index["price"], float)
+
+        logger.debug("TEST: Asserting Stock is an Integer and over 0")
+        for index in indexes:
+            assert isinstance(index["stock"], int)
 
     else:
 
-        # In case there is no Outer Layer. Single Product
+        # In case there is no Outer Layer.
         logger.debug("TEST: Asserting Product list inner structure")
         for value in expected_product_keys:
             assert value in json_response
@@ -81,3 +86,26 @@ def assert_product_response_body_structure(
         assert isinstance(json_response["price"], float)
         logger.debug("TEST: Asserting Stock is an Integer")
         assert isinstance(json_response["stock"], int)
+
+
+def assert_products_categories_response(json_response: dict, expected_categories_keys: list[str]):
+    logger.info(f"TEST: Asserting Products Categories response body structure")
+    first_index = json_response[0]
+    middle_index = json_response[len(json_response) // 2]
+    last_index = json_response[-1]
+
+    for value in expected_categories_keys:
+        assert value in first_index
+        assert value in middle_index
+        assert value in last_index
+
+
+def assert_categories_list_response(json_response: list, expected_categories: list[str]):
+    logger.info("TEST: Asserting expected categories on the list")
+    potential_missing_categories = set(expected_categories) - set(json_response)
+    assert not potential_missing_categories, f"Missing Categories found: {potential_missing_categories}"
+
+    logger.info("TEST: Verifying if there are new categories")
+    potential_new_categories = set(json_response) - set(expected_categories)
+    if potential_new_categories:
+        logger.warning(f"New Categories found: {potential_new_categories}")

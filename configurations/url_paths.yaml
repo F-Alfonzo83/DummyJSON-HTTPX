@@ -5,3 +5,8 @@ dummy_json:
       login: "auth/login"
     products:
       base_products: "products"
+      search: "products/search"
+      categories: "products/categories"
+      category_list: "products/category-list"
+      category: "products/category"
+      add_product: "products/add"

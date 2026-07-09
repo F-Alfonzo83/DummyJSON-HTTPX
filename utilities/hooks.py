@@ -1,4 +1,6 @@
+import json
 import logging
+from json import JSONDecodeError
 
 
 def request_hook(logger: logging.Logger):
@@ -11,9 +13,18 @@ def request_hook(logger: logging.Logger):
         log_requests: (function) Logging function
     """
     def logs_requests(request):
+        SENSITIVE_REQUEST_VALUES = ["username", "password"]
+
         logger.debug(f"Request Hook : RM: {request.method} | RURL: {request.url}")
+        # Check if the request contains a request body content
         if request.content:
-            logger.debug(f"Request Hook: RB : {request.content}")
+            try:
+                request_body = json.loads(request.content)
+                curated_body = {key: ("***REDACTED***" if key in SENSITIVE_REQUEST_VALUES else value)
+                                for key, value in request_body.items()}
+                logger.debug(f"Request Hook: RB: {curated_body}")
+            except JSONDecodeError:
+                logger.warning("Request Body is not JSON")
     return logs_requests
 
 
