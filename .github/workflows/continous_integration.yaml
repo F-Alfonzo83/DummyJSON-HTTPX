@@ -1,0 +1,64 @@
+name: "Continuous Integration"
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: "Lint with Flake8"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 1st - Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.12.4
+      - name: Install Required tools (Flake8)
+        run: "pip install -r requirements-dev.txt"
+
+      - name: Execute Flake8
+        run: "flake8 ."
+
+  security-audit:
+    name: "Scan Security Issues with Bandit"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 1st - Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.12.4
+      - name: Install Required tools (Bandit)
+        run: "pip install -r requirements-dev.txt"
+
+      - name: Execute Bandit
+        run: "bandit -r ."
+
+  execute-tests:
+    name: "Execute Tests with Pytest"
+    runs-on: ubuntu-24.04
+    needs: [lint, security-audit]
+    env:
+      DEFAULT_USER_NAME: "${{secrets.DEFAULT_USER_NAME}}"
+      DEFAULT_USER_PASS: "${{secrets.DEFAULT_USER_PASS}}"
+      ALTERNATE_USER_NAME: "${{secrets.ALTERNATE_USER_NAME}}"
+      ALTERNATE_USER_PASS: "${{secrets.ALTERNATE_USER_PASS}}"
+    steps:
+      - name: 1st - Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Start Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.12.4
+      - name: Install Required Libraries (Development and Libraries)
+        run: "pip install -r requirements.txt && pip install -r requirements-dev.txt"
+
+      - name: Execute Pytest
+        run: "pytest ."
+
