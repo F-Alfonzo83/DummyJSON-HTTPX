@@ -2,8 +2,6 @@ import sys
 import yaml
 from pathlib import Path
 
-from urllib3.util.util import reraise
-
 
 class ConfigLoader:
 
