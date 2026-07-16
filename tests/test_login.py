@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
 from httpx_clients.dummyjson_base import DummyJsonBase
-from utilities.assertion_helpers import *
+from utilities.assertion_helpers import (assert_status_code,
+                                         assert_login_response_body_structure,
+                                         assert_json_response)
 
 dummyjson = DummyJsonBase()
 load_dotenv()

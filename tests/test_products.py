@@ -1,5 +1,13 @@
-from utilities.assertion_helpers import *
+import logging
+from utilities.assertion_helpers import (assert_status_code, assert_json_response,
+                                         assert_product_response_body_structure,
+                                         assert_products_categories_response,
+                                         assert_categories_list_response)
 from httpx_clients.dummyjson_base import DummyJsonBase
+import pytest
+
+
+logger = logging.getLogger(__name__)
 
 dummyjson = DummyJsonBase()
 EXPECTED_OUTER_KEYS = ["products", "total", "skip", "limit"]

@@ -37,7 +37,7 @@ jobs:
         run: "pip install -r requirements-dev.txt"
 
       - name: Execute Bandit
-        run: "bandit -r ."
+        run: "bandit -r -s B101 . "
 
   execute-tests:
     name: "Execute Tests with Pytest"

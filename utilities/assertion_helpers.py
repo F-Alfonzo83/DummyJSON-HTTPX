@@ -8,7 +8,7 @@ logger = _logger(__name__)
 
 
 def assert_status_code(response: httpx.Response, expected_status_code: int = 200):
-    logger.info(f"TEST: Asserting status code")
+    logger.info("TEST: Asserting status code")
     assert response.status_code == expected_status_code
 
 
@@ -23,7 +23,7 @@ def assert_json_response(response: httpx.Response):
 
 
 def assert_login_response_body_structure(json_response: dict, expected_body_keys: list[str]):
-    logger.info(f"TEST: Asserting Authentication response body structure")
+    logger.info("TEST: Asserting Authentication response body structure")
     for value in expected_body_keys:
         assert value in json_response
         assert json_response[value] is not None
@@ -89,7 +89,7 @@ def assert_product_response_body_structure(
 
 
 def assert_products_categories_response(json_response: dict, expected_categories_keys: list[str]):
-    logger.info(f"TEST: Asserting Products Categories response body structure")
+    logger.info("TEST: Asserting Products Categories response body structure")
     first_index = json_response[0]
     middle_index = json_response[len(json_response) // 2]
     last_index = json_response[-1]
