@@ -1,3 +1,4 @@
+import json
 import logging
 from utilities.assertion_helpers import (assert_status_code, assert_json_response,
                                          assert_product_response_body_structure,
@@ -23,6 +24,14 @@ EXPECTED_CATEGORIES = ["beauty", "fragrances", "furniture", "groceries", "home-d
 
 EXPECTED_CATEGORIES_TEST_SET = ["womens-jewellery", "sports-accessories", "home-decoration", "mobile-accessories",
                                 "sunglasses", "tops", "groceries"]
+
+EXPECTED_ADD_PRODUCT_ECHO_KEYS = ["id", "title", "description", "category", "price", "discountPercentage",  "rating",
+                                  "stock", "brand", "thumbnail", "images"]
+
+# ADD PRODUCT POSSIBLE PAYLOADS
+valid_payload = {"title": "valid_title", "price": 13.1416, "description": "stock"}
+unrecognized_keys_payload = {"cat": "meow", "price": 13.1416, "dog": "woof"}
+empty_payload = {}
 
 
 def test_get_all_products():
@@ -102,3 +111,18 @@ def test_get_products_category(category: str):
     assert_product_response_body_structure(json_response=json_response,
                                            expected_outer_keys=EXPECTED_OUTER_KEYS,
                                            expected_product_keys=EXPECTED_PRODUCTS_KEYS)
+
+
+@pytest.mark.parametrize(argnames="payload",
+                         argvalues=[valid_payload, unrecognized_keys_payload, empty_payload],
+                         ids=["valid_payload", "unrecognized_payload", "empty_payload"])
+def test_add_product(payload):
+    response = dummyjson.products_client.add_product(**payload)
+    assert_status_code(response, 201)
+    json_response = assert_json_response(response)
+
+    expected_response_echo = {key: value for key, value in json.loads(response.request.content).items()
+                              if key in EXPECTED_ADD_PRODUCT_ECHO_KEYS}
+    actual_response = {key: value for key, value in json_response.items() if key != "id"}
+    assert expected_response_echo == actual_response
+    assert json_response["id"] == 195
