@@ -1,0 +1,20 @@
+repos:
+  - repo: local
+    hooks:
+      - id: autopep8
+        name: Autopep8
+        entry: autopep8 --in-place
+        language: system
+        types: [python]
+
+      - id: flake8
+        name: Flake8
+        entry: flake8
+        language: system
+        types: [python]
+
+      - id: bandit
+        name: Bandit
+        entry: bandit -s B101
+        language: system
+        types: [python]
