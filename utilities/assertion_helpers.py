@@ -109,3 +109,10 @@ def assert_categories_list_response(json_response: list, expected_categories: li
     potential_new_categories = set(json_response) - set(expected_categories)
     if potential_new_categories:
         logger.warning(f"New Categories found: {potential_new_categories}")
+
+
+def assert_search_pattern_in_response(json_response: dict, search_pattern: str):
+    logger.info("TEST: Asserting Search pattern found in response")
+    for product in json_response["products"]:
+        assert (search_pattern in product["title"].lower() or
+                search_pattern in product["description"].lower())

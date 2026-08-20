@@ -38,7 +38,8 @@ class DummyJsonBase:
         self.dummyjson_client = httpx.Client(base_url=self.BASE_URL,
                                              headers={'Content-Type': 'application/json'},
                                              event_hooks={"request": [self.request_hook_logger],  # Must be a list
-                                                          "response": [self.response_hook_logger]})  # Must be a list
+                                                          "response": [self.response_hook_logger]},
+                                             timeout=config.client_timeout)  # Must be a list
 
         # Clients
         # Authentication Clients:
@@ -65,3 +66,6 @@ class DummyJsonBase:
         response_json = response.json()
         token = response_json["accessToken"]
         self.auth_token = token
+
+    def close_client(self):
+        self.dummyjson_client.close()

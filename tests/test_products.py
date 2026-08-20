@@ -3,14 +3,12 @@ import logging
 from utilities.assertion_helpers import (assert_status_code, assert_json_response,
                                          assert_product_response_body_structure,
                                          assert_products_categories_response,
-                                         assert_categories_list_response)
-from httpx_clients.dummyjson_base import DummyJsonBase
+                                         assert_categories_list_response, assert_search_pattern_in_response)
 import pytest
 
 
 logger = logging.getLogger(__name__)
 
-dummyjson = DummyJsonBase()
 EXPECTED_OUTER_KEYS = ["products", "total", "skip", "limit"]
 EXPECTED_PRODUCTS_KEYS = ["id", "title", "description", "category", "price", "discountPercentage", "rating",
                           "stock", "tags", "sku", "weight", "dimensions", "warrantyInformation",
@@ -34,9 +32,9 @@ unrecognized_keys_payload = {"cat": "meow", "price": 13.1416, "dog": "woof"}
 empty_payload = {}
 
 
-def test_get_all_products():
+def test_get_all_products(dummyjson_client):
 
-    response = dummyjson.products_client.get_all_products()
+    response = dummyjson_client.products_client.get_all_products()
     # Assertions
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
@@ -45,9 +43,9 @@ def test_get_all_products():
                                            expected_outer_keys=EXPECTED_OUTER_KEYS)
 
 
-def test_get_all_products_limit_to_one():
+def test_get_all_products_limit_to_one(dummyjson_client):
     # Explicitly  and  fixed send a hard coded limit of 1.
-    response = dummyjson.products_client.get_all_products(limit=1)
+    response = dummyjson_client.products_client.get_all_products(limit=1)
     # Assertions
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
@@ -56,17 +54,32 @@ def test_get_all_products_limit_to_one():
                                            expected_outer_keys=EXPECTED_OUTER_KEYS)
 
 
-def test_get_single_product():
+def test_get_single_product(dummyjson_client):
 
-    response = dummyjson.products_client.get_product_by_id(product_id=1)
+    prod_id = 1
+    response = dummyjson_client.products_client.get_product_by_id(product_id=prod_id)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
     assert_product_response_body_structure(json_response=json_response,
                                            expected_product_keys=EXPECTED_PRODUCTS_KEYS)
+    # Assert Product ID.
+    assert (json_response["id"] == prod_id)
 
 
-def test_search_products():
-    response = dummyjson.products_client.search_products(search_term=".")
+def test_search_products(dummyjson_client):
+    search_pattern = "phone"
+    response = dummyjson_client.products_client.search_products(search_term=search_pattern)
+    assert_status_code(response, 200)
+    json_response = assert_json_response(response)
+    assert_product_response_body_structure(json_response=json_response,
+                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS,
+                                           expected_outer_keys=EXPECTED_OUTER_KEYS)
+    assert_search_pattern_in_response(json_response=json_response,
+                                      search_pattern=search_pattern.lower())
+
+
+def test_get_all_products_limit(dummyjson_client):
+    response = dummyjson_client.products_client.get_all_products(limit=10)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
     assert_product_response_body_structure(json_response=json_response,
@@ -74,25 +87,16 @@ def test_search_products():
                                            expected_outer_keys=EXPECTED_OUTER_KEYS)
 
 
-def test_get_all_products_limit():
-    response = dummyjson.products_client.get_all_products(limit=10)
-    assert_status_code(response, 200)
-    json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS,
-                                           expected_outer_keys=EXPECTED_OUTER_KEYS)
-
-
-def test_get_all_products_categories():
-    response = dummyjson.products_client.get_all_products_categories()
+def test_get_all_products_categories(dummyjson_client):
+    response = dummyjson_client.products_client.get_all_products_categories()
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
     assert_products_categories_response(json_response=json_response,
                                         expected_categories_keys=EXPECTED_CATEGORIES_KEYS)
 
 
-def test_get_products_category_list():
-    response = dummyjson.products_client.get_product_category_list()
+def test_get_products_category_list(dummyjson_client):
+    response = dummyjson_client.products_client.get_product_category_list()
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
     # Validate response is a list.
@@ -104,8 +108,8 @@ def test_get_products_category_list():
 
 @pytest.mark.parametrize(argnames="category",
                          argvalues=EXPECTED_CATEGORIES_TEST_SET)
-def test_get_products_category(category: str):
-    response = dummyjson.products_client.get_product_category(category)
+def test_get_products_category(dummyjson_client, category: str):
+    response = dummyjson_client.products_client.get_product_category(category)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
     assert_product_response_body_structure(json_response=json_response,
@@ -116,8 +120,8 @@ def test_get_products_category(category: str):
 @pytest.mark.parametrize(argnames="payload",
                          argvalues=[valid_payload, unrecognized_keys_payload, empty_payload],
                          ids=["valid_payload", "unrecognized_payload", "empty_payload"])
-def test_add_product(payload):
-    response = dummyjson.products_client.add_product(**payload)
+def test_add_product(dummyjson_client, payload):
+    response = dummyjson_client.products_client.add_product(**payload)
     assert_status_code(response, 201)
     json_response = assert_json_response(response)
 

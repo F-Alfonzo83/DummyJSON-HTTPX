@@ -23,12 +23,12 @@ class ProductsClient:
                                    params=params)
         return response
 
-    def get_product_by_id(self, product_id: str) -> httpx.Response:
+    def get_product_by_id(self, product_id: int) -> httpx.Response:
         response = self.client.get(f"/{config.products_url().lstrip('/')}/{product_id}")
         return response
 
     def search_products(self, search_term: str) -> httpx.Response:
-        response = self.client.get(f"/{config.products_url().lstrip('/')}",
+        response = self.client.get(f"/{config.products_search_url().lstrip('/')}",
                                    params={"q": search_term})
         return response
 

@@ -5,6 +5,11 @@ from pathlib import Path
 
 class ConfigLoader:
 
+    # Load httpx Client Configs
+    client_timeout = 5  # Seconds
+
+    # Load YML  File for Paths
+
     URL_FILE_LOCATOR = Path(__file__).parent / "url_paths.yaml"
 
     try:
