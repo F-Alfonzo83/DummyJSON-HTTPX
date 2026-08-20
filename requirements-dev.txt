@@ -4,10 +4,18 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
+annotated-types==0.8.0
+    # via
+    #   -c requirements.txt
+    #   pydantic
+argcomplete==3.7.2
+    # via datamodel-code-generator
 autopep8==2.3.2
     # via -r requirements-dev.in
 bandit==1.9.4
     # via -r requirements-dev.in
+black==26.5.1
+    # via datamodel-code-generator
 boolean-py==5.0
     # via license-expression
 build==1.5.0
@@ -25,9 +33,13 @@ cfgv==3.5.0
 charset-normalizer==3.4.9
     # via requests
 click==8.4.2
-    # via pip-tools
+    # via
+    #   black
+    #   pip-tools
 cyclonedx-python-lib==11.11.0
     # via pip-audit
+datamodel-code-generator==0.74.0
+    # via -r requirements-dev.in
 defusedxml==0.7.1
     # via py-serializable
 distlib==0.4.3
@@ -39,35 +51,52 @@ filelock==3.30.0
     #   virtualenv
 flake8==7.3.0
     # via -r requirements-dev.in
+genson==1.4.0
+    # via datamodel-code-generator
 identify==2.6.19
     # via pre-commit
 idna==3.18
     # via
     #   -c requirements.txt
     #   requests
+inflect==7.5.0
+    # via datamodel-code-generator
 iniconfig==2.3.0
     # via pytest
+isort==8.0.1
+    # via datamodel-code-generator
+jinja2==3.1.6
+    # via datamodel-code-generator
 license-expression==30.4.4
     # via cyclonedx-python-lib
 markdown-it-py==4.2.0
     # via rich
+markupsafe==3.0.3
+    # via jinja2
 mccabe==0.7.0
     # via flake8
 mdurl==0.1.2
     # via markdown-it-py
+more-itertools==11.1.0
+    # via inflect
 msgpack==1.2.1
     # via cachecontrol
+mypy-extensions==1.1.0
+    # via black
 nodeenv==1.10.0
     # via pre-commit
 packageurl-python==0.17.6
     # via cyclonedx-python-lib
 packaging==26.2
     # via
+    #   black
     #   build
     #   pip-audit
     #   pip-requirements-parser
     #   pytest
     #   wheel
+pathspec==1.1.1
+    # via black
 pip-api==0.0.34
     # via pip-audit
 pip-audit==2.10.1
@@ -78,6 +107,7 @@ pip-tools==7.5.3
     # via -r requirements-dev.in
 platformdirs==4.10.0
     # via
+    #   black
     #   pip-audit
     #   python-discovery
     #   virtualenv
@@ -91,6 +121,14 @@ pycodestyle==2.14.0
     # via
     #   autopep8
     #   flake8
+pydantic==2.13.4
+    # via
+    #   -c requirements.txt
+    #   datamodel-code-generator
+pydantic-core==2.46.4
+    # via
+    #   -c requirements.txt
+    #   pydantic
 pyflakes==3.4.0
     # via flake8
 pygments==2.20.0
@@ -109,10 +147,13 @@ python-discovery==1.4.4
     # via virtualenv
 python-dotenv==1.2.2
     # via -r requirements-dev.in
+pytokens==0.4.1
+    # via black
 pyyaml==6.0.3
     # via
     #   -c requirements.txt
     #   bandit
+    #   datamodel-code-generator
     #   pre-commit
 requests==2.34.2
     # via
@@ -130,10 +171,20 @@ tomli==2.4.1
     # via pip-audit
 tomli-w==1.2.0
     # via pip-audit
+typeguard==4.6.0
+    # via inflect
 typing-extensions==4.16.0
     # via
     #   -c requirements.txt
     #   cyclonedx-python-lib
+    #   pydantic
+    #   pydantic-core
+    #   typeguard
+    #   typing-inspection
+typing-inspection==0.4.4
+    # via
+    #   -c requirements.txt
+    #   pydantic
 urllib3==2.7.0
     # via requests
 virtualenv==21.6.1

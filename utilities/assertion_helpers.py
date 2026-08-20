@@ -9,7 +9,8 @@ logger = _logger(__name__)
 
 def assert_status_code(response: httpx.Response, expected_status_code: int = 200):
     logger.info("TEST: Asserting status code")
-    assert response.status_code == expected_status_code
+    assert response.status_code == expected_status_code, \
+        f"{response.request.method} - {response.request.url} -> {response.status_code}"
 
 
 def assert_json_response(response: httpx.Response):
@@ -20,13 +21,6 @@ def assert_json_response(response: httpx.Response):
         print(f"Error decoding JSON response.\nSystem error: {json_error}")
         pytest.fail()
     return json_response
-
-
-def assert_login_response_body_structure(json_response: dict, expected_body_keys: list[str]):
-    logger.info("TEST: Asserting Authentication response body structure")
-    for value in expected_body_keys:
-        assert value in json_response
-        assert json_response[value] is not None
 
 
 def assert_product_response_body_structure(

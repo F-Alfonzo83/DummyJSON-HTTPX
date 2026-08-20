@@ -7,3 +7,4 @@ pytest
 python-dotenv
 pip-tools
 pre-commit
+datamodel-code-generator
