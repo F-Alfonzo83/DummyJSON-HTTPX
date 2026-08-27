@@ -1,5 +1,7 @@
 import json
 import logging
+
+from models.product_schema_models import ProductSchema
 from utilities.assertion_helpers import (assert_status_code, assert_json_response,
                                          assert_product_response_body_structure,
                                          assert_products_categories_response,
@@ -64,6 +66,8 @@ def test_get_single_product(dummyjson_client):
                                            expected_product_keys=EXPECTED_PRODUCTS_KEYS)
     # Assert Product ID.
     assert (json_response["id"] == prod_id)
+    # Schema Validation
+    ProductSchema.model_validate(json_response)
 
 
 def test_search_products(dummyjson_client):

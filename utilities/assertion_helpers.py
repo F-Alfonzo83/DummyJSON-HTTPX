@@ -110,3 +110,9 @@ def assert_search_pattern_in_response(json_response: dict, search_pattern: str):
     for product in json_response["products"]:
         assert (search_pattern in product["title"].lower() or
                 search_pattern in product["description"].lower())
+
+
+def assert_host(value):
+    if value.host != "cdn.dummyjson.com":
+        raise ValueError("Bad Host")
+    return value
