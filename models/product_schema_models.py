@@ -1,6 +1,7 @@
 from typing import Annotated, Literal
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, EmailStr, UrlConstraints, HttpUrl, AfterValidator
+from pydantic import BaseModel, ConfigDict, Field, EmailStr, UrlConstraints, HttpUrl, AfterValidator, RootModel, \
+    model_validator
 from pydantic.alias_generators import to_camel
 
 from utilities.assertion_helpers import assert_host
@@ -44,7 +45,7 @@ class NestedProductMeta(BaseModel):
     qr_code: URL_ANNOTATION
 
 
-class ProductSchema(BaseModel):
+class SingleProductSchema(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel)
 
     id: Annotated[int, Field(gt=0)]
@@ -69,3 +70,29 @@ class ProductSchema(BaseModel):
     meta: NestedProductMeta
     images: list[URL_ANNOTATION]
     thumbnail: URL_ANNOTATION
+
+
+class ProductsSchema(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
+    products: list[SingleProductSchema]
+    total: Annotated[int, Field(ge=0)]
+    skip: Annotated[int, Field(ge=0)]
+    limit: Annotated[int, Field(ge=0)]
+
+
+class CategoriesSchemaItem(BaseModel):
+    @model_validator(mode="after")
+    def validate_category_name(self):
+        expected_name = self.slug.title().replace("-", " ")
+        if self.name != expected_name:
+            raise ValueError(f"Category name '{expected_name}' is invalid.")
+        return self
+
+    slug: Literal[PRODUCT_CATEGORIES]
+    name: str
+    url: URL_ANNOTATION
+
+
+class CategoriesSchema(RootModel[list[CategoriesSchemaItem]]):
+    root: list[CategoriesSchemaItem]

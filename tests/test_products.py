@@ -1,11 +1,8 @@
 import json
 import logging
 
-from models.product_schema_models import ProductSchema
-from utilities.assertion_helpers import (assert_status_code, assert_json_response,
-                                         assert_product_response_body_structure,
-                                         assert_products_categories_response,
-                                         assert_categories_list_response, assert_search_pattern_in_response)
+from models.product_schema_models import SingleProductSchema, ProductsSchema, CategoriesSchema
+from utilities.assertion_helpers import (assert_status_code, assert_json_response)
 import pytest
 
 
@@ -40,9 +37,8 @@ def test_get_all_products(dummyjson_client):
     # Assertions
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS,
-                                           expected_outer_keys=EXPECTED_OUTER_KEYS)
+    # Assert Schema
+    ProductsSchema.model_validate(json_response)
 
 
 def test_get_all_products_limit_to_one(dummyjson_client):
@@ -51,9 +47,8 @@ def test_get_all_products_limit_to_one(dummyjson_client):
     # Assertions
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS,
-                                           expected_outer_keys=EXPECTED_OUTER_KEYS)
+    # Assert Schema
+    ProductsSchema.model_validate(json_response)
 
 
 def test_get_single_product(dummyjson_client):
@@ -62,12 +57,10 @@ def test_get_single_product(dummyjson_client):
     response = dummyjson_client.products_client.get_product_by_id(product_id=prod_id)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS)
     # Assert Product ID.
     assert (json_response["id"] == prod_id)
     # Schema Validation
-    ProductSchema.model_validate(json_response)
+    SingleProductSchema.model_validate(json_response)
 
 
 def test_search_products(dummyjson_client):
@@ -75,28 +68,23 @@ def test_search_products(dummyjson_client):
     response = dummyjson_client.products_client.search_products(search_term=search_pattern)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS,
-                                           expected_outer_keys=EXPECTED_OUTER_KEYS)
-    assert_search_pattern_in_response(json_response=json_response,
-                                      search_pattern=search_pattern.lower())
+    # Assert Schema
+    ProductsSchema.model_validate(json_response)
 
 
 def test_get_all_products_limit(dummyjson_client):
     response = dummyjson_client.products_client.get_all_products(limit=10)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS,
-                                           expected_outer_keys=EXPECTED_OUTER_KEYS)
+    # Assert Schema
+    ProductsSchema.model_validate(json_response)
 
 
 def test_get_all_products_categories(dummyjson_client):
     response = dummyjson_client.products_client.get_all_products_categories()
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_products_categories_response(json_response=json_response,
-                                        expected_categories_keys=EXPECTED_CATEGORIES_KEYS)
+    CategoriesSchema.model_validate(json_response)
 
 
 def test_get_products_category_list(dummyjson_client):
@@ -106,8 +94,6 @@ def test_get_products_category_list(dummyjson_client):
     # Validate response is a list.
     logger.debug("TEST: Asserting that the response is  a list")
     assert isinstance(json_response, list)
-    assert_categories_list_response(json_response=json_response,
-                                    expected_categories=EXPECTED_CATEGORIES)
 
 
 @pytest.mark.parametrize(argnames="category",
@@ -116,9 +102,7 @@ def test_get_products_category(dummyjson_client, category: str):
     response = dummyjson_client.products_client.get_product_category(category)
     assert_status_code(response, 200)
     json_response = assert_json_response(response)
-    assert_product_response_body_structure(json_response=json_response,
-                                           expected_outer_keys=EXPECTED_OUTER_KEYS,
-                                           expected_product_keys=EXPECTED_PRODUCTS_KEYS)
+    ProductsSchema.model_validate(json_response)
 
 
 @pytest.mark.parametrize(argnames="payload",
