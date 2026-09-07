@@ -86,7 +86,7 @@ class CategoriesSchemaItem(BaseModel):
     def validate_category_name(self):
         expected_name = self.slug.title().replace("-", " ")
         if self.name != expected_name:
-            raise ValueError(f"Category name '{expected_name}' is invalid.")
+            raise ValueError(f"Category name '{self.name}' is invalid.")
         return self
 
     slug: Literal[PRODUCT_CATEGORIES]
@@ -94,5 +94,9 @@ class CategoriesSchemaItem(BaseModel):
     url: URL_ANNOTATION
 
 
-class CategoriesSchema(RootModel[list[CategoriesSchemaItem]]):
+class CategoriesSchema(RootModel):
     root: list[CategoriesSchemaItem]
+
+
+class ProductCategoryList(RootModel):
+    root: list[Literal[PRODUCT_CATEGORIES]]

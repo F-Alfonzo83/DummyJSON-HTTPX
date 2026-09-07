@@ -48,24 +48,5 @@ class DummyJsonBase:
         # Products Client
         self.products_client = ProductsClient(client=self.dummyjson_client, logger=self.logger)
 
-    def retrieve_auth_token(self, username: str, password: str, expires_in: int):
-        """Retrieves the authorization token for the given username and password.
-
-        Args:
-            username (str) Username
-            password (str) Password
-            expires_in (int) - Optional:  Expiration time. Defaults to 60
-
-        Returns:
-            auth_token (str) Authorization token. Stores  as class variable.
-
-        Notes:
-            Must be called to populate the authorization token.
-        """
-        response = self.auth_client.authenticate(username, password, expires_in)
-        response_json = response.json()
-        token = response_json["accessToken"]
-        self.auth_token = token
-
     def close_client(self):
         self.dummyjson_client.close()

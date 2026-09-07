@@ -3,6 +3,9 @@ import httpx
 import pytest
 from utilities.logger import _logger
 
+EXPECTED_HOSTS = ["cdn.dummyjson.com",
+                  "dummyjson.com"]
+
 # Instantiate a Logger for the Assertions Helper Module
 logger = _logger(__name__)
 
@@ -26,14 +29,13 @@ def assert_json_response(response: httpx.Response):
 def assert_search_pattern_in_response(json_response: dict, search_pattern: str):
     logger.info("TEST: Asserting Search pattern found in response")
     for product in json_response["products"]:
-        assert (search_pattern in product["title"].lower() or
-                search_pattern in product["description"].lower())
+        assert (search_pattern.lower() in product["title"].lower() or
+                search_pattern.lower() in product["description"].lower()), \
+            (f"Search pattern: '{search_pattern}' not found in response: Title:'{product['title']}' | "
+             f"Description: '{product['description']}'")
 
 
 def assert_host(value):
-    EXPECTED_HOSTS = ["cdn.dummyjson.com",
-                      "dummyjson.com"]
-
     if value.host not in EXPECTED_HOSTS:
         raise ValueError("Bad Host")
     return value
