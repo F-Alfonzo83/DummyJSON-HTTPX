@@ -33,8 +33,6 @@ class DummyJsonBase:
 
         self.request_hook_logger = request_hook(self.logger)
         self.response_hook_logger = response_hook(self.logger)
-        self.auth_token = None
-
         self.dummyjson_client = httpx.Client(base_url=self.BASE_URL,
                                              headers={'Content-Type': 'application/json'},
                                              event_hooks={"request": [self.request_hook_logger],  # Must be a list

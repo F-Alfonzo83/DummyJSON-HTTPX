@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 import httpx
@@ -17,7 +16,21 @@ class AuthClient:
         self.auth_token_request_time = None
         self.auth_token_expires_in = None
 
-    def authenticate(self, username: str, password: str, expires_in_mins: int | None = 60):
+    def authenticate(self, username: str, password: str, expires_in_mins: int = 60):
+        '''Authenticates to DummyJSON.
+
+        The 'authenticate' method performs the call to the authentication endpoint, but does not guarantee
+        a token. It's only purpose is to execute POST call to the endpoint. Returns  the response value
+        whatever if positive or  negative.
+
+        Args:
+            username (str) : The username to authenticate
+            password (str) : The password of the user
+            expires_in_mins (int): Defaults to 60
+
+        Returns:
+            response: (httpx.Response) : Response object
+        '''
         json_body = {
             "username": username,
             "password": password,
@@ -25,16 +38,31 @@ class AuthClient:
         }
         self.logger.info("Authenticating")
         response = self.client.post(f"/{config.login_url()}", json=json_body)
-        self.retrieve_auth_token(response)
         return response
 
-    def retrieve_auth_token(self, auth_response: httpx.Response) -> str | None:
-        if auth_response.status_code == 200:
-            self.auth_token_request_time = time.time()
-            self.auth_token_expires_in = json.loads(auth_response.request.content)['expiresInMins']
-            self.auth_token = auth_response.json()["accessToken"]
-            return self.auth_token
-        else:
-            logging.error("Authentication failed")
-            self.auth_token = None
-            return None
+    def retrieve_auth_token(self, username: str, password: str, expires_in_mins: int = 60) -> str:
+        '''Retrieves the authentication token.
+
+        Makes use of the authenticate method  and extracts the authentication token from the response.
+
+        Args:
+            username (str) : The username to authenticate
+            password (str) : The password of the user
+            expires_in_mins (int): Defaults to 60
+
+        Raises:
+            httpx.HTTPStatusError: Raises an error in case the authentication fails.
+
+        Returns:
+            (str) Authentication token
+        '''
+
+        auth_response = self.authenticate(username=username,
+                                          password=password,
+                                          expires_in_mins=expires_in_mins)
+        auth_response.raise_for_status()
+
+        self.auth_token = auth_response.json()["accessToken"]
+        self.auth_token_request_time = time.time()
+        self.auth_token_expires_in = expires_in_mins
+        return self.auth_token

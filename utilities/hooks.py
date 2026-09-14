@@ -46,7 +46,8 @@ def response_hook(logger: logging.Logger):
 
         elif response.status_code >= 400:
             logger.warning(f"Response Hook : RC: {response.status_code} | REL {response.elapsed.total_seconds()}"
-                           f"\nMessage: 400 Level Error: Check request / parameters")
+                           f"\nMessage: 400 Level Error: Check request / parameters\n"
+                           f"Response Body: {response.content}")
 
         else:
             logger.debug(f"Response Hook : RC: {response.status_code} | REL {response.elapsed.total_seconds()}")
