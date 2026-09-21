@@ -1,12 +1,15 @@
-import json
-import logging
-from models import product_schema_models
-from models.product_schema_models import SingleProductSchema, ProductsSchema, CategoriesSchema, ProductCategoryList
-from utilities.assertion_helpers import (assert_status_code, assert_json_response, assert_search_pattern_in_response)
 import pytest
+import json
 
+from utilities.logger import _logger
+from models import product_schema_models
+from models.product_schema_models import (SingleProductSchema, ProductsSchema, CategoriesSchema,
+                                          ProductCategoryList, UpdateProductSchema)
+from utilities.assertion_helpers import (assert_status_code, assert_json_response,
+                                         assert_search_pattern_in_response)
+from httpx_clients.auth_client import build_auth_header
 
-logger = logging.getLogger(__name__)
+logger = _logger(__name__)
 
 
 EXPECTED_CATEGORIES_TEST_SET = ["womens-jewellery", "sports-accessories", "home-decoration", "mobile-accessories",
@@ -138,3 +141,17 @@ def test_add_product(dummyjson_client, payload):
     actual_response = {key: value for key, value in json_response.items() if key != "id"}
     assert expected_response_echo == actual_response
     assert json_response["id"] == 195
+
+
+def test_put_update_product_title(dummyjson_client, auth_token):
+    item_id = 1
+    payload = {"title":  "Modified Title"}
+    response = dummyjson_client.products_client.update_product(product_id=item_id,
+                                                               headers=build_auth_header(auth_token),
+                                                               request_body=payload)
+    assert_status_code(response, 200)
+    json_body = assert_json_response(response)
+    model = UpdateProductSchema.model_validate(json_body)
+    assert "auth" in response.request.url.path
+    assert model.id == item_id
+    assert model.title == payload["title"]

@@ -55,3 +55,9 @@ class ProductsClient:
         response = self.client.post(f"/{config.products_add_product_url().lstrip('/')}",
                                     json=request_body)
         return response
+
+    def update_product(self, request_body: dict, headers: dict,  product_id: int) -> httpx.Response:
+        response = self.client.put(f"{config.products_update_product_url().lstrip('/')}/{product_id}",
+                                   json=request_body,
+                                   headers=headers)
+        return response

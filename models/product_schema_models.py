@@ -100,3 +100,19 @@ class CategoriesSchema(RootModel):
 
 class ProductCategoryList(RootModel):
     root: list[Literal[PRODUCT_CATEGORIES]]
+
+
+class UpdateProductSchema(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel,
+                              extra='forbid')
+    id: Annotated[int, Field(gt=0)]
+    title: Annotated[str, Field(min_length=1, max_length=50)]
+    price: Annotated[float, Field(ge=0)]
+    discount_percentage: Annotated[float, Field(ge=0)]
+    stock: Annotated[int, Field(ge=0)]
+    rating: Annotated[float, Field(ge=0, le=5)]
+    images: list[URL_ANNOTATION]
+    thumbnail: URL_ANNOTATION
+    description: Annotated[str, Field(min_length=1, max_length=250)]
+    brand: Annotated[str | None, Field(min_length=1, max_length=50)]
+    category: Literal[PRODUCT_CATEGORIES]

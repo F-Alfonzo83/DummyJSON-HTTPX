@@ -46,6 +46,9 @@ class ConfigLoader:
     def products_add_product_url(self):
         return self.url_path["dummy_json"]["testing_env"]["products"]["add_product"]
 
+    def products_update_product_url(self):
+        return self.url_path["dummy_json"]["testing_env"]["products"]["update_product"]
+
 
 # Testing Section
 
@@ -59,3 +62,4 @@ if __name__ == "__main__":
     print(loader.products_category_list_url())
     print(loader.products_category_url())
     print(loader.products_add_product_url())
+    print(loader.products_update_product_url())

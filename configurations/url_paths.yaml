@@ -10,3 +10,4 @@ dummy_json:
       category_list: "products/category-list"
       category: "products/category"
       add_product: "products/add"
+      update_product: "auth/products"
