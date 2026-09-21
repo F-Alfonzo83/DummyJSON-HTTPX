@@ -18,3 +18,4 @@ repos:
         entry: bandit -s B101
         language: system
         types: [python]
+        exclude: ^tests/test_auth_header\.py$

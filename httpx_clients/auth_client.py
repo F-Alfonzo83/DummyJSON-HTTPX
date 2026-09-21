@@ -6,6 +6,27 @@ from configurations.config_loader import ConfigLoader
 config = ConfigLoader()
 
 
+def build_auth_header(token: str, prefix: str = 'Bearer') -> dict[str, str]:
+    """Build an Authorization header.
+
+    Taking a  'prefix' and a  'token' it build a  Authorization header.
+    Allows for creation of  both valid and invalid tokens modifying either token or prefix.
+
+    Args:
+        token (str): The authorization token.
+        prefix (str): The prefix of the Authorization header. Defaults to 'Bearer'.  Since it is the standard
+
+    Examples:
+        build_auth_header(token='123')
+        build_auth_header(prefix='invalid',token='')
+
+    Returns:
+        dict[str,str]: A Dictionary ready to be inserted as a request header.
+    """
+    auth_header = {"Authorization": f"{prefix} {token}"}
+    return auth_header
+
+
 class AuthClient:
     def __init__(self, logger: logging.Logger,
                  client: httpx.Client) -> None:

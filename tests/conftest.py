@@ -59,7 +59,7 @@ def default_user_credentials():
     Makes use of a namedTuple to  provide the username and password for the default user.
 
     Returns:
-        credentials: namedTuple object containing the username and password of the default user.
+        Credentials: NamedTuple object containing the username and password ready to be used for authentication.
 
     Examples:
         default_user_credentials.username, default_user_credentials.password
