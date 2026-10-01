@@ -21,6 +21,18 @@ EXPECTED_CATEGORIES_TEST_SET = ["womens-jewellery", "sports-accessories", "home-
 EXPECTED_ADD_PRODUCT_ECHO_KEYS = ["id", "title", "description", "category", "price", "discountPercentage",  "rating",
                                   "stock", "brand", "thumbnail", "images"]
 
+EXPIRED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJlbWlseXMiLCJlbWFpbCI6ImVtaWx\
+5LmpvaG5zb25AeC5kdW1teWpzb24uY29tIiwiZmlyc3ROYW1lIjoiRW1pbHkiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJnZW5kZXIiOiJmZW1h\
+bGUiLCJpbWFnZSI6Imh0dHBzOi8vZHVtbXlqc29uLmNvbS9pY29uL2VtaWx5cy8xMjgiLCJpYXQiOjE3OTA4NjQ1MDQsImV4cCI6MTc5MDg2O\
+DEwNH0.Q_3cLHQUfqbyRhIEETC8Euz5pQhYMsxq4SEck-ewzjI"  # nosec B105 -
+# expired token for the public demo account, used only to trigger "Token Expired!"
+
+PARAMS_INVALID_PRODUCT_IDS = [
+    pytest.param(0, id="product_id_equals_0"),
+    pytest.param(195, id="product_id_equals_195"),
+    pytest.param("abc", id="product_id_is_letter_string"),
+    pytest.param("12$", id="product_id_is_special_characters"),
+]
 # ADD PRODUCT POSSIBLE PAYLOADS
 valid_payload = {"title": "valid_title", "price": 13.1416, "description": "stock"}
 unrecognized_keys_payload = {"cat": "meow", "price": 13.1416, "dog": "woof"}
@@ -179,3 +191,48 @@ def test_delete_product(dummyjson_client, auth_token):
     assert item_id == model.id, f"TEST ERROR: Item ID mismatch: {item_id} != {model.id}"
     assert time_before-delta <= model.deleted_on <= time_after+delta, \
         "TEST ERROR: Time not within expected range"
+
+
+@pytest.mark.parametrize("prod_id", PARAMS_INVALID_PRODUCT_IDS)
+def test_negative_get_product_id_invalid_values(dummyjson_client, prod_id):
+    response = dummyjson_client.products_client.get_product_by_id(product_id=prod_id)
+    assert_status_code(response, 404)
+    json_response = assert_json_response(response)
+    assert json_response["message"] == f"Product with id '{prod_id}' not found"
+
+
+@pytest.mark.parametrize("prod_id", PARAMS_INVALID_PRODUCT_IDS)
+def test_negative_delete_product_id_invalid_values(dummyjson_client, auth_token,  prod_id):
+    response = dummyjson_client.products_client.delete_product(product_id=prod_id,
+                                                               headers=build_auth_header(auth_token))
+    assert_status_code(response, 404)
+    json_response = assert_json_response(response)
+    assert json_response["message"] == f"Product with id '{prod_id}' not found"
+
+
+@pytest.mark.parametrize("bad_token, expected_status,expected_message", [
+    pytest.param(lambda token: {"Authorization": f"Bearer {EXPIRED_TOKEN}"},
+                 int(401),
+                 "Token Expired!",
+                 id="expired_token"),
+    pytest.param(lambda token: {"Authorization": f"Bearer {EXPIRED_TOKEN.split("a")[1]}"},
+                 int(401),
+                 "Invalid/Expired Token!",
+                 id="invalid_token"),
+    pytest.param(lambda token: {},
+                 int(401),
+                 "Access Token is required",
+                 id="no_token"),
+    pytest.param(lambda token: {"Authorization": f"Some {token}"},
+                 int(500),
+                 "invalid token",
+                 id="malformed_token")
+])
+def test_negative_delete_product_invalid_tokens(dummyjson_client, bad_token,
+                                                expected_status,
+                                                expected_message, auth_token):
+    response = dummyjson_client.products_client.delete_product(product_id=1,
+                                                               headers=bad_token(auth_token))
+    assert_status_code(response, expected_status)
+    json_response = assert_json_response(response)
+    assert json_response["message"] == expected_message
