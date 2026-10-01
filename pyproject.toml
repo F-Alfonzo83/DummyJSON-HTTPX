@@ -1,0 +1,6 @@
+[tool.datamodel-codegen]
+input-file-type = "json"
+output-model-type = "pydantic_v2.BaseModel"
+snake-case-field = true
+use-annotated = true
+target-python-version = "3.12"
