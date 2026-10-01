@@ -120,5 +120,5 @@ class UpdateProductSchema(BaseModel):
 
 
 class DeleteProductSchema(SingleProductSchema):
-    is_deleted: Annotated[bool, Literal[False]]
+    is_deleted: Literal[True]
     deleted_on: datetime
