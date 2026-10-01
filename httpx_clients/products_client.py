@@ -57,11 +57,12 @@ class ProductsClient:
         return response
 
     def update_product(self, request_body: dict, headers: dict,  product_id: int) -> httpx.Response:
-        response = self.client.put(f"{config.products_update_product_url().lstrip('/')}/{product_id}",
+        response = self.client.put(f"{config.products_auth_path_url().lstrip('/')}/{product_id}",
                                    json=request_body,
                                    headers=headers)
         return response
 
-    def delete_product(self, product_id: int) -> httpx.Response:
-        response = self.client.delete(f"{config.products_update_product_url().lstrip('/')}/{product_id}")
+    def delete_product(self, product_id: int, headers: dict) -> httpx.Response:
+        response = self.client.delete(f"{config.products_auth_path_url().lstrip('/')}/{product_id}",
+                                      headers=headers)
         return response

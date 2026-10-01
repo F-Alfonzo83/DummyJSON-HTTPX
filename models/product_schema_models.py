@@ -46,7 +46,8 @@ class NestedProductMeta(BaseModel):
 
 
 class SingleProductSchema(BaseModel):
-    model_config = ConfigDict(alias_generator=to_camel)
+    model_config = ConfigDict(alias_generator=to_camel,
+                              extra='forbid')
 
     id: Annotated[int, Field(gt=0)]
     title: Annotated[str, Field(min_length=1, max_length=50)]
@@ -116,3 +117,8 @@ class UpdateProductSchema(BaseModel):
     description: Annotated[str, Field(min_length=1, max_length=250)]
     brand: Annotated[str | None, Field(min_length=1, max_length=50)]
     category: Literal[PRODUCT_CATEGORIES]
+
+
+class DeleteProductSchema(SingleProductSchema):
+    is_deleted: Annotated[bool, Literal[False]]
+    deleted_on: datetime

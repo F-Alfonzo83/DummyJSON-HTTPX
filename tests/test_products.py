@@ -1,10 +1,13 @@
+import datetime
+from datetime import UTC
+
 import pytest
 import json
 
 from utilities.logger import _logger
 from models import product_schema_models
 from models.product_schema_models import (SingleProductSchema, ProductsSchema, CategoriesSchema,
-                                          ProductCategoryList, UpdateProductSchema)
+                                          ProductCategoryList, UpdateProductSchema, DeleteProductSchema)
 from utilities.assertion_helpers import (assert_status_code, assert_json_response,
                                          assert_search_pattern_in_response)
 from httpx_clients.auth_client import build_auth_header
@@ -152,13 +155,27 @@ def test_put_update_product_title(dummyjson_client, auth_token):
     assert_status_code(response, 200)
     json_body = assert_json_response(response)
     model = UpdateProductSchema.model_validate(json_body)
-    assert "auth" in response.request.url.path
+    assert f"/auth/products/{item_id}" == response.request.url.path, \
+        "TEST ERROR: Request was not sent to the correct URL"
     assert model.id == item_id
     assert model.title == payload["title"]
 
 
 def test_delete_product(dummyjson_client, auth_token):
+    delta = datetime.timedelta(seconds=3)
     item_id = 1
-    response = dummyjson_client.products_client.delete_product(product_id=item_id)
+
+    time_before = datetime.datetime.now(tz=UTC)
+    response = dummyjson_client.products_client.delete_product(product_id=item_id,
+                                                               headers=build_auth_header(auth_token))
+    time_after = datetime.datetime.now(tz=UTC)
     assert_status_code(response, 200)
-    logger.debug(response.json())
+    json_response = assert_json_response(response)
+    model = DeleteProductSchema.model_validate(json_response)
+    assert "authorization" in response.request.headers, \
+        "TEST ERROR: Request Header does not contain authorization"
+    assert f"/auth/products/{item_id}" == response.request.url.path, \
+        "TEST ERROR: Request was not sent to the correct URL"
+    assert item_id == model.id, f"TEST ERROR: Item ID mismatch: {item_id} != {model.id}"
+    assert time_before-delta <= model.deleted_on <= time_after+delta, \
+        "TEST ERROR: Time not within expected range"
