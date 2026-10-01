@@ -47,7 +47,7 @@ class ConfigLoader:
         return self.url_path["dummy_json"]["testing_env"]["products"]["add_product"]
 
     def products_update_product_url(self):
-        return self.url_path["dummy_json"]["testing_env"]["products"]["update_product"]
+        return self.url_path["dummy_json"]["testing_env"]["products"]["products_auth_path"]
 
 
 # Testing Section

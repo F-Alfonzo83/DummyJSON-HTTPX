@@ -155,3 +155,10 @@ def test_put_update_product_title(dummyjson_client, auth_token):
     assert "auth" in response.request.url.path
     assert model.id == item_id
     assert model.title == payload["title"]
+
+
+def test_delete_product(dummyjson_client, auth_token):
+    item_id = 1
+    response = dummyjson_client.products_client.delete_product(product_id=item_id)
+    assert_status_code(response, 200)
+    logger.debug(response.json())

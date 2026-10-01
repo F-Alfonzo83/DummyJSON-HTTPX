@@ -61,3 +61,7 @@ class ProductsClient:
                                    json=request_body,
                                    headers=headers)
         return response
+
+    def delete_product(self, product_id: int) -> httpx.Response:
+        response = self.client.delete(f"{config.products_update_product_url().lstrip('/')}/{product_id}")
+        return response
