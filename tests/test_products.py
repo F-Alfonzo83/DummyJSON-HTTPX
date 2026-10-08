@@ -33,6 +33,26 @@ PARAMS_INVALID_PRODUCT_IDS = [
     pytest.param("abc", id="product_id_is_letter_string"),
     pytest.param("12$", id="product_id_is_special_characters"),
 ]
+
+PARAMS_INVALID_AUTH_TOKENS = [
+    pytest.param(lambda token: {"Authorization": f"Bearer {EXPIRED_TOKEN}"},
+                 401,
+                 "Token Expired!",
+                 id="expired_token"),
+    pytest.param(lambda token: {"Authorization": f"Bearer {EXPIRED_TOKEN.split("a")[1]}"},
+                 401,
+                 "Invalid/Expired Token!",
+                 id="invalid_token"),
+    pytest.param(lambda token: {},
+                 401,
+                 "Access Token is required",
+                 id="no_token"),
+    pytest.param(lambda token: {"Authorization": f"Some {token}"},
+                 500,
+                 "invalid token",
+                 id="malformed_token")
+]
+
 # ADD PRODUCT POSSIBLE PAYLOADS
 valid_payload = {"title": "valid_title", "price": 13.1416, "description": "stock"}
 unrecognized_keys_payload = {"cat": "meow", "price": 13.1416, "dog": "woof"}
@@ -210,29 +230,36 @@ def test_negative_delete_product_id_invalid_values(dummyjson_client, auth_token,
     assert json_response["message"] == f"Product with id '{prod_id}' not found"
 
 
-@pytest.mark.parametrize("bad_token, expected_status,expected_message", [
-    pytest.param(lambda token: {"Authorization": f"Bearer {EXPIRED_TOKEN}"},
-                 int(401),
-                 "Token Expired!",
-                 id="expired_token"),
-    pytest.param(lambda token: {"Authorization": f"Bearer {EXPIRED_TOKEN.split("a")[1]}"},
-                 int(401),
-                 "Invalid/Expired Token!",
-                 id="invalid_token"),
-    pytest.param(lambda token: {},
-                 int(401),
-                 "Access Token is required",
-                 id="no_token"),
-    pytest.param(lambda token: {"Authorization": f"Some {token}"},
-                 int(500),
-                 "invalid token",
-                 id="malformed_token")
-])
-def test_negative_delete_product_invalid_tokens(dummyjson_client, bad_token,
+@pytest.mark.parametrize("craft_bad_auth, expected_status,expected_message", PARAMS_INVALID_AUTH_TOKENS)
+def test_negative_delete_product_invalid_tokens(dummyjson_client,
+                                                craft_bad_auth,
                                                 expected_status,
                                                 expected_message, auth_token):
     response = dummyjson_client.products_client.delete_product(product_id=1,
-                                                               headers=bad_token(auth_token))
+                                                               headers=craft_bad_auth(auth_token))
+    assert_status_code(response, expected_status)
+    json_response = assert_json_response(response)
+    assert json_response["message"] == expected_message
+
+
+@pytest.mark.parametrize("prod_id", PARAMS_INVALID_PRODUCT_IDS)
+def test_negative_update_product_id_invalid_values(dummyjson_client, auth_token, prod_id):
+    response = dummyjson_client.products_client.update_product(product_id=prod_id,
+                                                               headers=build_auth_header(auth_token),
+                                                               request_body={"title": "Modified Title"})
+    assert_status_code(response, 404)
+    json_response = assert_json_response(response)
+    assert json_response["message"] == f"Product with id '{prod_id}' not found"
+
+
+@pytest.mark.parametrize("craft_bad_auth, expected_status,expected_message", PARAMS_INVALID_AUTH_TOKENS)
+def test_negative_update_product_invalid_tokens(dummyjson_client, auth_token,
+                                                craft_bad_auth,
+                                                expected_status,
+                                                expected_message):
+    response = dummyjson_client.products_client.update_product(product_id=1,
+                                                               headers=craft_bad_auth(auth_token),
+                                                               request_body={"title": "Modified Title"})
     assert_status_code(response, expected_status)
     json_response = assert_json_response(response)
     assert json_response["message"] == expected_message
