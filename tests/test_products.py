@@ -263,3 +263,19 @@ def test_negative_update_product_invalid_tokens(dummyjson_client, auth_token,
     assert_status_code(response, expected_status)
     json_response = assert_json_response(response)
     assert json_response["message"] == expected_message
+
+
+@pytest.mark.parametrize("category_id", [
+    pytest.param(" ", id="blank_space_category_id"),
+    pytest.param("smartphone", id="category_does_not_exist_(misspelled)"),
+    pytest.param("shawarma", id="category_does_not_exist_(not_real)"),
+    pytest.param("$%", id="category_does_not_exist(special_characters)"),
+])
+def test_negative_get_item_category_with_invalid_categories(dummyjson_client, category_id):
+    response = dummyjson_client.products_client.get_product_category(category=category_id)
+    assert_status_code(response, 200)
+    json_response = assert_json_response(response)
+    ProductsSchema.model_validate(json_response)
+    assert json_response["total"] == 0
+    assert json_response["skip"] == 0
+    assert json_response["limit"] == 0
